@@ -1,0 +1,80 @@
+<div class="api-details-container">
+  <h1>API Endpoint Details</h1>
+  <form [formGroup]="apiDetailsForm" (ngSubmit)="onSubmit()">
+    <table class="endpoints-table">
+      <thead>
+        <tr>
+          <th style="width: 25%;">Signature</th>
+          <th>Resource in Payload?</th>
+          <th>Resource in URL?</th>
+          <th>CR Validation Required?</th>
+          <th>Incident Validation?</th>
+          <th>Change in Payload?</th>
+          <th>Change in URL?</th>
+          <th>Incident in Payload?</th>
+          <th>Incident in URL?</th>
+          <th>Estimated Time (s)</th>
+        </tr>
+      </thead>
+      <tbody formArrayName="endpoints">
+        <tr *ngFor="let endpoint of endpointsFormArray.controls; let i = index" [formGroupName]="i">
+          <td>{{ endpoint.get('signature')?.value }}</td>
+          <td>
+            <select formControlName="resourceInPayload">
+              <option [ngValue]="true">Yes</option>
+              <option [ngValue]="false">No</option>
+            </select>
+          </td>
+          <td>
+            <select formControlName="resourceInUrl">
+              <option [ngValue]="true">Yes</option>
+              <option [ngValue]="false">No</option>
+            </select>
+          </td>
+          <td>
+            <select formControlName="crValidationRequired">
+              <option [ngValue]="true">Yes</option>
+              <option [ngValue]="false">No</option>
+            </select>
+          </td>
+          <td>
+            <select formControlName="incidentValidation">
+              <option [ngValue]="true">Yes</option>
+              <option [ngValue]="false">No</option>
+            </select>
+          </td>
+          <td>
+            <select formControlName="changeInPayload">
+              <option [ngValue]="true">Yes</option>
+              <option [ngValue]="false">No</option>
+            </select>
+          </td>
+          <td>
+            <select formControlName="changeInUrl">
+              <option [ngValue]="true">Yes</option>
+              <option [ngValue]="false">No</option>
+            </select>
+          </td>
+          <td>
+            <select formControlName="incidentInPayload">
+              <option [ngValue]="true">Yes</option>
+              <option [ngValue]="false">No</option>
+            </select>
+          </td>
+          <td>
+            <select formControlName="incidentInUrl">
+              <option [ngValue]="true">Yes</option>
+              <option [ngValue]="false">No</option>
+            </select>
+          </td>
+          <td>
+            <input type="number" formControlName="estimatedTime" min="1">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="form-actions">
+      <button type="submit" [disabled]="!apiDetailsForm.valid">Submit</button>
+    </div>
+  </form>
+</div>

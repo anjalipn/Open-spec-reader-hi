@@ -1,0 +1,48 @@
+<div class="api-config-container">
+  <h1>API Configuration</h1>
+  
+  <form [formGroup]="apiConfigForm" (ngSubmit)="onSubmit()" class="api-config-form">
+    <div class="form-group">
+      <label for="apiName">API Name</label>
+      <input 
+        type="text" 
+        id="apiName"
+        formControlName="apiName"
+        class="form-control"
+        [class.is-invalid]="apiName?.invalid && apiName?.touched"
+        placeholder="Enter API name">
+      <div class="invalid-feedback" *ngIf="apiName?.invalid && apiName?.touched">
+        API name is required
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="apiSpec">OpenAPI Specification File</label>
+      <div class="file-input-wrapper">
+        <input 
+          type="file" 
+          id="apiSpec"
+          (change)="onFileSelected($event)"
+          accept=".yaml,.yml"
+          class="form-control"
+          [class.is-invalid]="apiSpec?.invalid && apiSpec?.touched">
+        <div class="selected-file" *ngIf="selectedFile">
+          Selected file: {{ selectedFile.name }}
+        </div>
+      </div>
+      <div class="invalid-feedback" *ngIf="apiSpec?.invalid && apiSpec?.touched">
+        Please select a YAML file
+      </div>
+      <div class="file-type-hint">
+        Only YAML files (.yaml, .yml) are allowed
+      </div>
+    </div>
+
+    <button 
+      type="submit" 
+      class="btn btn-primary"
+      [disabled]="!apiConfigForm.valid">
+      Next
+    </button>
+  </form>
+</div>
