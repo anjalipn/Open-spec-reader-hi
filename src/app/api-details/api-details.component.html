@@ -45,11 +45,11 @@
           <!-- CR Validation Required Column -->
           <ng-container matColumnDef="crValidationRequired">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> CR Validation Required </th>
-            <td mat-cell *matCellDef="let endpoint">
+            <td mat-cell *matCellDef="let endpoint; let i = index">
               <mat-form-field>
-                <mat-select formControlName="crValidationRequired" [value]="endpoint.get('crValidationRequired')?.value">
-                  <mat-option value="true">Yes</mat-option>
-                  <mat-option value="false">No</mat-option>
+                <mat-select [formControl]="endpoint.get('crValidationRequired')">
+                  <mat-option [value]="true">Yes</mat-option>
+                  <mat-option [value]="false">No</mat-option>
                 </mat-select>
               </mat-form-field>
             </td>
@@ -58,11 +58,11 @@
           <!-- Incident Validation Column -->
           <ng-container matColumnDef="incidentValidation">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Incident Validation </th>
-            <td mat-cell *matCellDef="let endpoint">
+            <td mat-cell *matCellDef="let endpoint; let i = index">
               <mat-form-field>
-                <mat-select formControlName="incidentValidation" [value]="endpoint.get('incidentValidation')?.value">
-                  <mat-option value="true">Yes</mat-option>
-                  <mat-option value="false">No</mat-option>
+                <mat-select [formControl]="endpoint.get('incidentValidation')">
+                  <mat-option [value]="true">Yes</mat-option>
+                  <mat-option [value]="false">No</mat-option>
                 </mat-select>
               </mat-form-field>
             </td>
