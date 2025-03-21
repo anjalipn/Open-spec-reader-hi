@@ -1,0 +1,108 @@
+openapi: 3.0.0
+info:
+  title: Server Management API
+  version: 1.0.0
+  description: API for managing server resources
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production server
+
+components:
+  schemas:
+    Server:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the server
+        hostname:
+          type: string
+          description: Hostname of the server
+        status:
+          type: string
+          enum: [active, inactive, maintenance]
+          description: Current status of the server
+        changeRecord:
+          type: string
+          description: Change record number associated with this update
+          example: "CHG123456"
+        lastUpdated:
+          type: string
+          format: date-time
+          description: Timestamp of the last update
+        environment:
+          type: string
+          enum: [development, staging, production]
+          description: Environment the server belongs to
+      required:
+        - id
+        - hostname
+        - status
+        - changeRecord
+
+paths:
+  /servers/{serverId}:
+    patch:
+      summary: Update a server
+      description: Update the properties of an existing server
+      operationId: updateServer
+      parameters:
+        - name: serverId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the server to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Server'
+            example:
+              id: "550e8400-e29b-41d4-a716-446655440000"
+              hostname: "server-01.example.com"
+              status: "active"
+              changeRecord: "CHG123456"
+              lastUpdated: "2024-03-21T10:00:00Z"
+              environment: "production"
+      responses:
+        '200':
+          description: Server updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Server'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+        '404':
+          description: Server not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message 

@@ -115,11 +115,25 @@ export class ApiDetailsComponent implements OnInit {
   }
 
   private checkResourceInPayload(details: any): string {
-    const requestBody = details.requestBody?.content?.['application/json']?.schema;
-    if (!requestBody) return '';
+    // First check examples as they take precedence
+    const examples = details.requestBody?.content?.['application/json']?.examples;
+    if (examples) {
+      for (const example of Object.values(examples)) {
+        const value = (example as any).value;
+        const resourceFields = ['server', 'serverId', 'resource', 'resourceId', 'host', 'hostname'];
+        const path = this.findFieldPath(value, resourceFields);
+        if (path) return path;
+      }
+    }
 
-    const resourceFields = ['server', 'serverId', 'resource', 'resourceId', 'host', 'hostname'];
-    return this.findFieldPath(requestBody, resourceFields);
+    // If no examples found or no resource field in examples, check schema
+    const schema = details.requestBody?.content?.['application/json']?.schema;
+    if (schema) {
+      const resourceFields = ['server', 'serverId', 'resource', 'resourceId', 'host', 'hostname'];
+      return this.findFieldPath(schema, resourceFields);
+    }
+
+    return '';
   }
 
   private findFieldPath(obj: any, fields: string[], currentPath: string = ''): string {
@@ -134,17 +148,22 @@ export class ApiDetailsComponent implements OnInit {
       return '';
     }
 
+    // For schemas, only check property names
     if (obj.properties) {
       for (const [key, value] of Object.entries(obj.properties)) {
-        const newPath = currentPath ? `${currentPath}.${key}` : key;
         if (fields.some(field => key.toLowerCase().includes(field.toLowerCase()))) {
-          return newPath;
-        }
-        if (typeof value === 'object') {
-          const foundPath = this.findFieldPath(value, fields, newPath);
-          if (foundPath) return foundPath;
+          return key;
         }
       }
+      return '';
+    }
+
+    // For examples and other objects, do full traversal
+    if (typeof obj === 'string') {
+      if (fields.some(field => obj.toLowerCase().includes(field.toLowerCase()))) {
+        return currentPath;
+      }
+      return '';
     }
 
     if (Array.isArray(obj)) {
