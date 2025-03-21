@@ -22,16 +22,26 @@ jobs:
           node-version: '18'
           cache: 'npm'
           
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+          
       - name: Install dependencies
         run: npm ci
         
       - name: Build
-        run: npm run build -- --configuration production
+        run: npm run build -- --configuration production --base-href=/Open-spec-reader-hi/
         
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist/Open-spec-reader-hi
+          path: ./dist/api-configurator
 
   deploy:
     environment:

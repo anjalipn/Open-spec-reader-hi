@@ -125,6 +125,15 @@ export class ApiDetailsComponent implements OnInit {
   private findFieldPath(obj: any, fields: string[], currentPath: string = ''): string {
     if (!obj) return '';
 
+    // Handle $ref
+    if (obj.$ref) {
+      const resolvedRef = this.resolveReference(obj.$ref);
+      if (resolvedRef) {
+        return this.findFieldPath(resolvedRef, fields, currentPath);
+      }
+      return '';
+    }
+
     if (obj.properties) {
       for (const [key, value] of Object.entries(obj.properties)) {
         const newPath = currentPath ? `${currentPath}.${key}` : key;
@@ -154,6 +163,38 @@ export class ApiDetailsComponent implements OnInit {
     }
 
     return '';
+  }
+
+  private resolveReference(ref: string): any {
+    // Remove the #/ prefix if present
+    const path = ref.startsWith('#/') ? ref.substring(2) : ref;
+    
+    // Split the path into segments
+    const segments = path.split('/');
+    
+    // Get the root OpenAPI spec from the route state
+    let current = this.route.snapshot.queryParams['yamlContent'];
+    if (current) {
+      try {
+        current = JSON.parse(decodeURIComponent(current));
+      } catch (error) {
+        console.error('Error parsing YAML content:', error);
+        return null;
+      }
+    } else {
+      return null;
+    }
+
+    // Traverse the object following the path segments
+    for (const segment of segments) {
+      if (current && typeof current === 'object') {
+        current = current[segment];
+      } else {
+        return null;
+      }
+    }
+
+    return current;
   }
 
   private checkResourceInUrl(path: string): string {
@@ -197,6 +238,15 @@ export class ApiDetailsComponent implements OnInit {
 
   private findChangePatternPath(obj: any, currentPath: string = ''): string {
     if (!obj) return '';
+
+    // Handle $ref
+    if (obj.$ref) {
+      const resolvedRef = this.resolveReference(obj.$ref);
+      if (resolvedRef) {
+        return this.findChangePatternPath(resolvedRef, currentPath);
+      }
+      return '';
+    }
 
     if (typeof obj === 'string') {
       if (obj.startsWith('CHG') || obj.startsWith('CR')) {
@@ -266,6 +316,15 @@ export class ApiDetailsComponent implements OnInit {
 
   private findIncidentPatternPath(obj: any, currentPath: string = ''): string {
     if (!obj) return '';
+
+    // Handle $ref
+    if (obj.$ref) {
+      const resolvedRef = this.resolveReference(obj.$ref);
+      if (resolvedRef) {
+        return this.findIncidentPatternPath(resolvedRef, currentPath);
+      }
+      return '';
+    }
 
     if (typeof obj === 'string') {
       if (obj.startsWith('IN')) {
