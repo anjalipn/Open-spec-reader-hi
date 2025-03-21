@@ -1,12 +1,12 @@
 export interface ApiEndpoint {
   signature: string;  // Will now contain both path and HTTP verb
-  resourceInPayload: boolean;
-  resourceInUrl: boolean;
+  resourceInPayload: string;
+  resourceInUrl: string;
   crValidationRequired: boolean;
-  incidentValidation: boolean;
-  changeInPayload: boolean;
-  changeInUrl: boolean;
-  incidentInPayload: boolean;
-  incidentInUrl: boolean;
+  incidentValidationRequired: boolean;
+  changeInPayload: string;
+  changeInUrl: string;
+  incidentInPayload: string;
+  incidentInUrl: string;
   estimatedTime: number;
 } 

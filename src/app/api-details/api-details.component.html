@@ -1,80 +1,145 @@
 <div class="api-details-container">
   <h1>API Endpoint Details</h1>
   <form [formGroup]="apiDetailsForm" (ngSubmit)="onSubmit()">
-    <table class="endpoints-table">
-      <thead>
-        <tr>
-          <th style="width: 25%;">Signature</th>
-          <th>Resource in Payload?</th>
-          <th>Resource in URL?</th>
-          <th>CR Validation Required?</th>
-          <th>Incident Validation?</th>
-          <th>Change in Payload?</th>
-          <th>Change in URL?</th>
-          <th>Incident in Payload?</th>
-          <th>Incident in URL?</th>
-          <th>Estimated Time (s)</th>
-        </tr>
-      </thead>
-      <tbody formArrayName="endpoints">
-        <tr *ngFor="let endpoint of endpointsFormArray.controls; let i = index" [formGroupName]="i">
-          <td>{{ endpoint.get('signature')?.value }}</td>
-          <td>
-            <select formControlName="resourceInPayload">
-              <option [ngValue]="true">Yes</option>
-              <option [ngValue]="false">No</option>
-            </select>
-          </td>
-          <td>
-            <select formControlName="resourceInUrl">
-              <option [ngValue]="true">Yes</option>
-              <option [ngValue]="false">No</option>
-            </select>
-          </td>
-          <td>
-            <select formControlName="crValidationRequired">
-              <option [ngValue]="true">Yes</option>
-              <option [ngValue]="false">No</option>
-            </select>
-          </td>
-          <td>
-            <select formControlName="incidentValidation">
-              <option [ngValue]="true">Yes</option>
-              <option [ngValue]="false">No</option>
-            </select>
-          </td>
-          <td>
-            <select formControlName="changeInPayload">
-              <option [ngValue]="true">Yes</option>
-              <option [ngValue]="false">No</option>
-            </select>
-          </td>
-          <td>
-            <select formControlName="changeInUrl">
-              <option [ngValue]="true">Yes</option>
-              <option [ngValue]="false">No</option>
-            </select>
-          </td>
-          <td>
-            <select formControlName="incidentInPayload">
-              <option [ngValue]="true">Yes</option>
-              <option [ngValue]="false">No</option>
-            </select>
-          </td>
-          <td>
-            <select formControlName="incidentInUrl">
-              <option [ngValue]="true">Yes</option>
-              <option [ngValue]="false">No</option>
-            </select>
-          </td>
-          <td>
-            <input type="number" formControlName="estimatedTime" min="1">
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <mat-form-field>
+      <mat-label>Filter</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Search..." #input>
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <div class="mat-elevation-z8">
+      <div style="overflow-x: auto;">
+        <table mat-table [dataSource]="dataSource" matSort>
+          <!-- Signature Column -->
+          <ng-container matColumnDef="signature">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Signature </th>
+            <td mat-cell *matCellDef="let endpoint"> {{endpoint.get('signature')?.value}} </td>
+          </ng-container>
+
+          <!-- Resource in Payload Column -->
+          <ng-container matColumnDef="resourceInPayload">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Resource in Payload </th>
+            <td mat-cell *matCellDef="let endpoint">
+              <div class="resource-input">
+                <mat-form-field>
+                  <input matInput formControlName="resourceInPayloadPath" 
+                         [placeholder]="endpoint.get('resourceInPayload')?.value || ''">
+                </mat-form-field>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Resource in URL Column -->
+          <ng-container matColumnDef="resourceInUrl">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Resource in URL </th>
+            <td mat-cell *matCellDef="let endpoint">
+              <div class="resource-input">
+                <mat-form-field>
+                  <input matInput formControlName="resourceInUrlPath" 
+                         [placeholder]="endpoint.get('resourceInUrl')?.value || ''">
+                </mat-form-field>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- CR Validation Required Column -->
+          <ng-container matColumnDef="crValidationRequired">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> CR Validation Required </th>
+            <td mat-cell *matCellDef="let endpoint">
+              <mat-form-field>
+                <mat-select formControlName="crValidationRequired" [value]="endpoint.get('crValidationRequired')?.value">
+                  <mat-option value="true">Yes</mat-option>
+                  <mat-option value="false">No</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </td>
+          </ng-container>
+
+          <!-- Incident Validation Column -->
+          <ng-container matColumnDef="incidentValidation">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Incident Validation </th>
+            <td mat-cell *matCellDef="let endpoint">
+              <mat-form-field>
+                <mat-select formControlName="incidentValidation" [value]="endpoint.get('incidentValidation')?.value">
+                  <mat-option value="true">Yes</mat-option>
+                  <mat-option value="false">No</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </td>
+          </ng-container>
+
+          <!-- Change in Payload Column -->
+          <ng-container matColumnDef="changeInPayload">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Change in Payload </th>
+            <td mat-cell *matCellDef="let endpoint">
+              <div class="resource-input">
+                <mat-form-field>
+                  <input matInput formControlName="changeInPayload" 
+                         [placeholder]="endpoint.get('changeInPayload')?.value || ''">
+                </mat-form-field>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Change in URL Column -->
+          <ng-container matColumnDef="changeInUrl">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Change in URL </th>
+            <td mat-cell *matCellDef="let endpoint">
+              <div class="resource-input">
+                <mat-form-field>
+                  <input matInput formControlName="changeInUrl" 
+                         [placeholder]="endpoint.get('changeInUrl')?.value || ''">
+                </mat-form-field>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Incident in Payload Column -->
+          <ng-container matColumnDef="incidentInPayload">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Incident in Payload </th>
+            <td mat-cell *matCellDef="let endpoint">
+              <div class="resource-input">
+                <mat-form-field>
+                  <input matInput formControlName="incidentInPayloadPath" 
+                         [placeholder]="endpoint.get('incidentInPayload')?.value || ''">
+                </mat-form-field>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Incident in URL Column -->
+          <ng-container matColumnDef="incidentInUrl">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Incident in URL </th>
+            <td mat-cell *matCellDef="let endpoint">
+              <div class="resource-input">
+                <mat-form-field>
+                  <input matInput formControlName="incidentInUrlPath" 
+                         [placeholder]="endpoint.get('incidentInUrl')?.value || ''">
+                </mat-form-field>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Estimated Time Column -->
+          <ng-container matColumnDef="estimatedTime">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Estimated Time (s) </th>
+            <td mat-cell *matCellDef="let endpoint">
+              <mat-form-field>
+                <input matInput type="number" formControlName="estimatedTime" min="1">
+              </mat-form-field>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of endpoints"></mat-paginator>
+      </div>
+    </div>
+
     <div class="form-actions">
-      <button type="submit" [disabled]="!apiDetailsForm.valid">Submit</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="!apiDetailsForm.valid">Submit</button>
     </div>
   </form>
 </div>
